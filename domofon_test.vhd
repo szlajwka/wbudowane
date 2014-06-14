@@ -2,10 +2,10 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   14:23:58 06/14/2014
+-- Create Date:   15:44:33 06/14/2014
 -- Design Name:   
--- Module Name:   D:/Programowanie/SystemyWbudowane/test/domofon6/domofon_test.vhd
--- Project Name:  domofon6
+-- Module Name:   E:/Programowanie/SW/domofon7/domofon_test.vhd
+-- Project Name:  domofon7
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
@@ -115,12 +115,8 @@ BEGIN
 		in_openRequest <='0';
 		
 		wait for clk_period*10;
-		if door = '0' and out_flatNo = "0000" and out_isOpened ='0'  then
-				assert true report "OK 1!";
-		else
-			assert false report "Blad 1!";
-		end if;
-		wait for clk_period*10;
+		assert door = '0' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 1!";
+		
 		
 		-- 2
 		flatNo <= "0001";	
@@ -129,11 +125,8 @@ BEGIN
 		admin<='0';
 		
 		wait for clk_period*10;
-		if door = '1' and out_flatNo = "0001" and out_isOpened ='1'  then
-			assert true report "OK 2!";
-		else
-			assert false report "Blad 2!";
-		end if;
+		assert door = '1' and out_flatNo = "0001" and out_isOpened ='1' report "Blad 2!";
+		
 		wait for clk_period*10;
 		
 		-- 3
@@ -151,80 +144,35 @@ BEGIN
 		code <= "1010"; -- kod mieszkania ktory wczesniej byl dobry (teraz powinien  byc zly)
 		in_openRequest <='0';
 		admin<='0';
-		
-		wait for clk_period*10;
-		if door = '0' and out_flatNo = "0000" and out_isOpened ='0'  then
-				assert true report "OK 4!";
-		else
-			assert false report "Blad 4!";
-		end if;
-		wait for clk_period*10;
+		wait for clk_period*10;		
+		assert door = '0' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 4!";
 		
 		--5
 		flatNo <= "0001";	
 		code <= "1111"; -- nowy kod do mieszkania
 		in_openRequest <='0';
 		admin<='0';
-		
 		wait for clk_period*10;
-		if door = '1' and out_flatNo = "0001" and out_isOpened ='1'  then
-			assert true report "OK 5!";
-		else
-			assert false report "Blad 5!";
-		end if;
-		wait for clk_period*10;
+		assert door = '1' and out_flatNo = "0001" and out_isOpened ='1' report "Blad 5!";
 		
 		-- 6 --ktos z gory otwiera dzwi na dole
-		in_openRequest <="1";
+		in_openRequest <='1';
 		admin<='0'; --bez znaczenia
 		flatNo <= "0110";	-- bez znaczenia 
 		code <= "1000"; -- bez znaczenia
 		wait for clk_period*10;
-		if door = '1' and out_flatNo = "0000" and out_isOpened ='0'  then
-			assert true report "OK 6!";
-		else
-			assert false report "Blad 6!";
-		end if;
-		wait for clk_period*10;
+		
+		assert door = '1' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 6!";
 		
 		-- 7 -- ktos dzwoni domofonem
 		in_openRequest <='0';
 		admin<='0';
 		flatNo <= "0010";	
 		code <= "0000";
-		
 		wait for clk_period*10;
-		if door = '0' and out_flatNo = "0010" and out_isOpened ='0'  then
-			assert true report "OK 6!";
-		else
-			assert false report "Blad 6!";
-		end if;
+		assert door = '0' and out_flatNo = "0010" and out_isOpened ='0' report "Blad 7!";
+		
 		wait for clk_period*10;		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
-
       wait;
    end process;
 
