@@ -2,10 +2,10 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   15:44:33 06/14/2014
+-- Create Date:   20:22:38 06/15/2014
 -- Design Name:   
--- Module Name:   E:/Programowanie/SW/domofon7/domofon_test.vhd
--- Project Name:  domofon7
+-- Module Name:   D:/Programowanie/SystemyWbudowane/test/domofon9/domofon_test.vhd
+-- Project Name:  domofon9
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
@@ -107,29 +107,29 @@ BEGIN
       wait for clk_period*10;
 
       -- insert stimulus here 
-		
 		-- 1
 		admin<='0';
 		flatNo <= "0001";	
 		code <= "1011"; -- zly kod miszkania pierwszego
 		in_openRequest <='0';
+		talk_in<='0';	
 		
 		wait for clk_period*10;
-		assert door = '0' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 1!";
-		
-		
+		assert door = '0' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 1!";		
+		wait for clk_period*10;
 		-- 2
+		talk_in<='0';
 		flatNo <= "0001";	
 		code <= "1010"; -- dobry kod miszkania pierwszego	
 		in_openRequest <='0';
 		admin<='0';
 		
 		wait for clk_period*10;
-		assert door = '1' and out_flatNo = "0001" and out_isOpened ='1' report "Blad 2!";
-		
+		assert door = '1' and out_flatNo = "0001" and out_isOpened ='1' report "Blad 2!";		
 		wait for clk_period*10;
 		
 		-- 3
+		talk_in<='0';
 		admin<='1'; -- wlaczamy tryb administratora
 		flatNo <= "0001";	
 		code <= "1111"; -- ustawiamy kod mieszkania 1 na 1111
@@ -140,39 +140,49 @@ BEGIN
 		wait for clk_period*10;
 		
 		-- 4
+		talk_in<='0';
 		flatNo <= "0001";	
 		code <= "1010"; -- kod mieszkania ktory wczesniej byl dobry (teraz powinien  byc zly)
 		in_openRequest <='0';
 		admin<='0';
+		
 		wait for clk_period*10;		
 		assert door = '0' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 4!";
+		wait for clk_period*10;
 		
 		--5
+		talk_in<='0';
 		flatNo <= "0001";	
 		code <= "1111"; -- nowy kod do mieszkania
 		in_openRequest <='0';
 		admin<='0';
+		
 		wait for clk_period*10;
 		assert door = '1' and out_flatNo = "0001" and out_isOpened ='1' report "Blad 5!";
+		wait for clk_period*10;
 		
 		-- 6 --ktos z gory otwiera dzwi na dole
+		talk_in<='0';
 		in_openRequest <='1';
 		admin<='0'; --bez znaczenia
 		flatNo <= "0110";	-- bez znaczenia 
 		code <= "1000"; -- bez znaczenia
+		
+		wait for clk_period*10;		
+		assert door = '1' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 6!";
 		wait for clk_period*10;
 		
-		assert door = '1' and out_flatNo = "0000" and out_isOpened ='0' report "Blad 6!";
-		
 		-- 7 -- ktos dzwoni domofonem
+		talk_in<='0';
 		in_openRequest <='0';
 		admin<='0';
 		flatNo <= "0010";	
 		code <= "0000";
+		
 		wait for clk_period*10;
 		assert door = '0' and out_flatNo = "0010" and out_isOpened ='0' report "Blad 7!";
-		
-		wait for clk_period*10;		
+		wait for clk_period*10;
+
       wait;
    end process;
 

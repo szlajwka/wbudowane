@@ -34,34 +34,45 @@ begin
 
 	begin
 	if rising_edge(clk) then
-		if (admin = '0') then		-- TRYB  ZWYKLY (NIE ADMINOWSKI)
-			if in_openRequest = '1' then -- ktos z mieszkancow chce aby otworzyc drzwi
-				door <='1';					-- drzwi otwarte
-				out_isOpened <= '0';		-- nikogo nie powiadamiamy	
-				out_flatNo <= "0000";	-- nikogo nie powiadamiamy
-			else -- PROBA OTWORZENIA DRZWI SPOD BRAMY
-				if code = "0000" then 	-- KTOS ZADZWONIL DO MIESZKANIA (BEZ KODU)
-					door <= '0';				-- drzwi zamkniete
-					out_isOpened <= '0';		-- przeslij dalej ze nikt nie wchodzi, czyli bedziemy nawiazywac polaczenie glosow
-					out_flatNo <= flatNo;	-- przeslij dalej numer mieszkania do ktorego bedziemy dzwonic
-				else		-- KTOS WCHODZI DO BRAMY ZA POMOCA KODU 
-					if (codes(to_integer(signed(flatNo))) = code) then	-- KOD PRAWIDLOWY
-						door <= '1';				-- drzwi otwarte
-						out_isOpened <='1';		-- przesliij dalej informacje, ze ktos wchodzi
-						out_flatNo <= flatNo;	-- przesliij dalej numer mieszkania
+		if talk_in = '1' then -- ROZMOWA
+			talk_out<='1';	--linia rozmowy
+			door<='0';	--podczas rozmowy drzwi sa zamkniete
+			out_isOpened <= '0';		-- nie powiadamiamy o otworzeniu drzwi
+			out_flatNo <= "0000";	-- nie wysylamy nr mieszkania
+		else	
+			if (admin = '0') then		-- TRYB  ZWYKLY (NIE ADMINOWSKI)
+				if in_openRequest = '1' then -- ktos z mieszkancow chce aby otworzyc drzwi
+					talk_out<='0';
+					door <='1';					-- drzwi otwarte
+					out_isOpened <= '0';		-- nikogo nie powiadamiamy	o otworzeniu drzwi
+					out_flatNo <= "0000";	-- nikogo nie powiadamiamy
+				else -- PROBA OTWORZENIA DRZWI SPOD BRAMY
+					if code = "0000" then 	-- KTOS ZADZWONIL DO MIESZKANIA (BEZ KODU)
+						talk_out<='0';
+						door <= '0';				-- drzwi zamkniete
+						out_isOpened <= '0';		-- przeslij dalej ze nikt nie wchodzi, czyli bedziemy nawiazywac polaczenie glosow
+						out_flatNo <= flatNo;	-- przeslij dalej numer mieszkania do ktorego bedziemy dzwonic
+					else		-- KTOS WCHODZI DO BRAMY ZA POMOCA KODU 
+						if (codes(to_integer(signed(flatNo))) = code) then	-- KOD PRAWIDLOWY
+							talk_out<='0';
+							door <= '1';				-- drzwi otwarte
+							out_isOpened <='1';		-- przesliij dalej informacje, ze ktos wchodzi
+							out_flatNo <= flatNo;	-- przesliij dalej numer mieszkania
 
-					else 						--KOD NIE PRAWIDLOWY
-						door <= '0'; 			-- drzwi zamkniete
-						out_isOpened <='0';		-- nic nie przesylamy
-						out_flatNo <= "0000";	--nikt nie wchodzil, nie przesylaj nic do domu
+						else 						--KOD NIE PRAWIDLOWY
+							talk_out<='0';
+							door <= '0'; 			-- drzwi zamkniete
+							out_isOpened <='0';		-- nic nie przesylamy
+							out_flatNo <= "0000";	--nikt nie wchodzil, nie przesylaj nic do domu
+						end if;
 					end if;
 				end if;
+			else	-- TRYB ADMINA
+				codes(to_integer(signed(flatNo))) := code;	 -- przypisz do tabliy z kodami pod adresem mieszaknia nowy kod
+				door <= '1'; 	-- administrator po wejscu do swojego trybu moze wejsc do bramy
+				out_flatNo <= "0000";	-- nikogo nie powiadamiamy
+				out_isOpened <= '0';		-- nikogo nie powiadamiamy	
 			end if;
-		else	-- TRYB ADMINA
-			codes(to_integer(signed(flatNo))) := code;	 -- przypisz do tabliy z kodami pod adresem mieszaknia nowy kod
-			door <= '1'; 	-- administrator po wejscu do swojego trybu moze wejsc do bramy
-			out_flatNo <= "0000";	-- nikogo nie powiadamiamy
-			out_isOpened <= '0';		-- nikogo nie powiadamiamy	
 		end if;
 	end if;	
 	end process X;
